@@ -43,9 +43,6 @@ typedef void (^UACordovaVoidCallbackBlock)(NSArray *args);
 
 - (void)pluginInitialize {
     UA_LINFO("Initializing PushNotificationPlugin");
-
-    UA_LINFO("Not enabling push notifications by default, to provide app with more control");
-    [UAPush setDefaultPushEnabledValue:NO];
 }
 
 - (void)takeOff {
