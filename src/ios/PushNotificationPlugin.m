@@ -43,7 +43,9 @@ typedef void (^UACordovaVoidCallbackBlock)(NSArray *args);
 
 - (void)pluginInitialize {
     UA_LINFO("Initializing PushNotificationPlugin");
-    [self takeOff];
+
+    UA_LINFO("Not enabling push notifications by default, to provide app with more control");
+    [UAPush setDefaultPushEnabledValue:NO];
 }
 
 - (void)takeOff {
@@ -255,6 +257,10 @@ typedef void (^UACordovaVoidCallbackBlock)(NSArray *args);
 }
 
 //registration
+//
+- (void)takeOff:(CDVInvokedUrlCommand*) command {
+    [self takeOff];
+}
 
 - (void)registerForNotificationTypes:(CDVInvokedUrlCommand*)command {
     UA_LDEBUG(@"PushNotificationPlugin: register for notification types");
@@ -588,7 +594,11 @@ typedef void (^UACordovaVoidCallbackBlock)(NSArray *args);
 #pragma mark Other stuff
 
 - (void)dealloc {
-    [UAPush shared].pushNotificationDelegate = nil;
+    if([UAPush shared].pushNotificationDelegate == self){
+        //only remove the delegate if this is the webview/plugin that is currently receiving
+        //the delegate notifications.
+        [UAPush shared].pushNotificationDelegate = nil;
+    }
     [UAPush shared].registrationDelegate = nil;
 
 }
@@ -600,7 +610,7 @@ typedef void (^UACordovaVoidCallbackBlock)(NSArray *args);
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil];
-        
+
         [someError show];
     }
 }
