@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 
 public class PushNotificationPlugin extends CordovaPlugin {
 
-    private final static List<String> knownActions = Arrays.asList("enablePush", "disablePush", "enableLocation", "disableLocation", "enableBackgroundLocation",
+    private final static List<String> knownActions = Arrays.asList("takeOff", "enablePush", "disablePush", "enableLocation", "disableLocation", "enableBackgroundLocation",
             "disableBackgroundLocation", "isPushEnabled", "isSoundEnabled", "isVibrateEnabled", "isQuietTimeEnabled", "isInQuietTime", "isLocationEnabled",
             "getIncoming", "getPushID", "getQuietTime", "getTags", "getAlias", "setAlias", "setTags", "setSoundEnabled", "setVibrateEnabled",
             "setQuietTimeEnabled", "setQuietTime", "recordCurrentLocation", "clearNotifications");
@@ -61,9 +61,6 @@ public class PushNotificationPlugin extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         Logger.info("Initializing PushNotificationPlugin");
-        Autopilot.automaticTakeOff(cordova.getActivity().getApplication());
-        pushPrefs = PushManager.shared().getPreferences();
-        locationPrefs = UALocationManager.shared().getPreferences();
     }
 
     private static JSONObject notificationObject(String message,
@@ -137,6 +134,13 @@ public class PushNotificationPlugin extends CordovaPlugin {
         });
 
         return true;
+    }
+
+    void takeOff(JSONArray data, CallbackContext callbackContext) {
+        Autopilot.automaticTakeOff(cordova.getActivity().getApplication());
+        pushPrefs = PushManager.shared().getPreferences();
+        locationPrefs = UALocationManager.shared().getPreferences();
+        callbackContext.success();
     }
 
     void clearNotifications(JSONArray data, CallbackContext callbackContext) {
